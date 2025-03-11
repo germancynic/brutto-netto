@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brutto-Netto-Rechner</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: auto; padding: 20px; }
+        label, input, select { display: block; width: 100%; margin-bottom: 10px; }
+        button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+        p { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Brutto-Netto-Rechner</h2>
+    
+    <label>Bruttogehalt (€)</label>
+    <input type="number" id="brutto" value="3000" min="0">
+    
+    <label>Steuerklasse</label>
+    <select id="steuerklasse">
+        <option value="I">I</option>
+        <option value="II">II</option>
+        <option value="III">III</option>
+        <option value="IV">IV</option>
+        <option value="V">V</option>
+        <option value="VI">VI</option>
+    </select>
+    
+    <label>Anzahl Kinder</label>
+    <input type="number" id="kinder" value="0" min="0">
+    
+    <label><input type="checkbox" id="kirchensteuer"> Kirchensteuer zahlen</label>
+    <label><input type="checkbox" id="nachtZuschlag"> Nacht-/Feiertagszuschläge</label>
+    
+    <button onclick="berechnen()">Berechnen</button>
+    <p id="ergebnis"></p>
+    
+    <script>
+        function berechnen() {
+            let brutto = parseFloat(document.getElementById("brutto").value);
+            let steuerklasse = document.getElementById("steuerklasse").value;
+            let kinder = parseInt(document.getElementById("kinder").value);
+            let kirchensteuer = document.getElementById("kirchensteuer").checked;
+            let nachtZuschlag = document.getElementById("nachtZuschlag").checked;
+            
+            fetch("http://localhost/api.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ brutto, steuerklasse, kinder, kirchensteuer, nacht_zuschlag: nachtZuschlag })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("ergebnis").innerText = `Netto-Gehalt: ${data.netto} €`;
+            })
+            .catch(error => console.error("Fehler:", error));
+        }
+    </script>
+</body>
+</html>
